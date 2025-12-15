@@ -1,722 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COMESA Quiz App</title>
+    <title>اختبار الكوميسا</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .confetti::before, .confetti::after { 
-            content: ''; 
-            position: fixed; 
-            inset: 0; 
-            background-image: 
-                linear-gradient(45deg, rgba(99,102,241,0.15) 25%, transparent 25%), 
-                linear-gradient(-45deg, rgba(34,197,94,0.12) 25%, transparent 25%); 
-            background-size: 40px 40px; 
-            animation: floaty 8s linear infinite; 
-            pointer-events: none;
-            z-index: -1;
-        }
-        .confetti::after { 
-            animation-duration: 10s; 
-            transform: translateY(-20px); 
-            opacity: 0.8;
-        }
-        @keyframes floaty { 
-            0% { transform: translateY(-30px) rotate(0deg); } 
-            50% { transform: translateY(10px) rotate(180deg); } 
-            100% { transform: translateY(-30px) rotate(360deg); } 
-        }
-        
-        .question-transition {
-            transition: all 0.3s ease;
-        }
-        
-        .correct-answer {
-            background-color: #d1fae5 !important;
-            border-color: #10b981 !important;
-        }
-        
-        .incorrect-answer {
-            background-color: #fee2e2 !important;
-            border-color: #ef4444 !important;
-        }
-        
-        .selected-answer {
-            border-color: #818cf8 !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-        
-        .match-correct {
-            background-color: #d1fae5 !important;
-            border-color: #10b981 !important;
-            opacity: 0.7;
-        }
-        
-        .pulse-animation {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-    </style>
 </head>
+
 <body class="min-h-screen bg-gradient-to-br from-indigo-50 to-green-50 p-4 md:p-6">
-    <div id="app" class="max-w-4xl mx-auto w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl p-4 md:p-6">
-        <!-- App content will be rendered here by JavaScript -->
-    </div>
+<div id="app" class="max-w-4xl mx-auto w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl p-4 md:p-6"></div>
 
-    <script>
-        // COMESA Quiz App - Standalone HTML Version
-        // All functionality from the React component converted to vanilla JS
-        
-        const QUESTIONS = [
-            { id: 1, type: "mcq", q: "What does the abbreviation COMESA stand for?", choices: [
-                "Community of Eastern & Southern Africa",
-                "Common Market for Eastern and Southern Africa",
-                "Council of Eastern & Southern African States",
-                "Confederation of East and South African Members"
-            ], answer: 1 },
-            { id: 2, type: "mcq", q: "In which city is COMESA's headquarters located?", choices: ["Nairobi", "Addis Ababa", "Lusaka", "Kigali"], answer: 2 },
-            { id: 3, type: "tf", q: "COMESA was established in the 1990s.", answer: true },
-            { id: 4, type: "mcq", q: "Which currency is used by Egypt?", choices: ["Egyptian Pound", "Kenyan Shilling", "Ugandan Shilling", "Zambian Kwacha"], answer: 0 },
-            { id: 5, type: "mcq", q: "Which of these countries is landlocked?", choices: ["Uganda", "Madagascar", "Comoros", "Djibouti"], answer: 0 },
-            { id: 6, type: "mcq", q: "Rwanda is known for which endangered species?", choices: ["Tigers", "Mountain Gorillas", "Kangaroos", "Polar Bears"], answer: 1 },
-            { id: 7, type: "mcq", q: "Uganda is often called the 'Pearl of ____." , choices: ["Africa", "Asia", "Oceania", "Europe"], answer: 0 },
-            { id: 8, type: "mcq", q: "Which island is famous for unique wildlife like lemurs?", choices: ["Madagascar", "Comoros", "Seychelles", "Mauritius"], answer: 0 },
-            { id: 9, type: "tf", q: "COMESA focuses only on political alliances and not trade or economic integration.", answer: false },
-            { id: 10, type: "mcq", q: "Which of these cities is the capital of Uganda?", choices: ["Kampala", "Nairobi", "Kigali", "Dar es Salaam"], answer: 0 },
-            { id: 11, type: "mcq", q: "Which lake is shared by Uganda and several neighboring countries?", choices: ["Lake Victoria", "Lake Titicaca", "Lake Baikal", "Lake Tanganyika"], answer: 0 },
-            { id: 12, type: "mcq", q: "Which of these is an official language of Rwanda?", choices: ["Swahili", "Somali", "Afrikaans", "Portuguese"], answer: 0 },
-            { id: 13, type: "mcq", q: "Which country uses the Ariary as currency?", choices: ["Madagascar", "Malawi", "Mozambique", "Mauritania"], answer: 0 },
-            { id: 14, type: "tf", q: "COMESA includes both island and mainland African countries.", answer: true },
-            { id: 15, type: "mcq", q: "Which of these countries has a coastline on the Red Sea?", choices: ["Egypt", "Zambia", "Burundi", "Rwanda"], answer: 0 },
-            { id: 16, type: "mcq", q: "Which country is known as the 'Land of a Thousand Hills'?", choices: ["Rwanda", "Ethiopia", "Madagascar", "Somalia"], answer: 0 },
-            { id: 17, type: "mcq", q: "What is a primary goal of COMESA?", choices: ["Cultural assimilation", "Economic integration and trade promotion", "Single-party rule", "Space exploration"], answer: 1 },
-            { id: 18, type: "mcq", q: "Which of the following languages is widely used as a lingua franca in East Africa?", choices: ["Swahili", "French", "Spanish", "Hindi"], answer: 0 },
-            { id: 19, type: "tf", q: "COMESA works to reduce trade barriers between member states.", answer: true },
-            { id: 20, type: "mcq", q: "Which country is famous for the Nile River's source stretches?", choices: ["Uganda", "Algeria", "Libya", "Tunisia"], answer: 0 },
-            { id: 21, type: "mcq", q: "Which of these is a commonly grown cash crop in parts of East Africa?", choices: ["Coffee", "Cocoa (only)", "Olives", "Rice (only)"], answer: 0 },
-            { id: 22, type: "mcq", q: "Which animal is frequently seen in East African safaris?", choices: ["Elephant", "Penguin", "Polar Bear", "Panda"], answer: 0 },
-            { id: 23, type: "mcq", q: "Which of these cities is the capital of Madagascar?", choices: ["Antananarivo", "Moroni", "Lilongwe", "Bujumbura"], answer: 0 },
-            { id: 24, type: "tf", q: "COMESA only accepts English as its working language.", answer: false },
-            { id: 25, type: "mcq", q: "Which of these countries is on an island rather than the African mainland?", choices: ["Comoros", "Zambia", "Malawi", "Swaziland"], answer: 0 },
-            { id: 26, type: "mcq", q: "Which of the following is a major export from Madagascar?", choices: ["Vanilla", "Wheat", "Maple Syrup", "Olive Oil"], answer: 0 },
-            { id: 27, type: "mcq", q: "Which capital city sits at a high elevation and is known for cool climate in East Africa?", choices: ["Kigali", "Bamako", "Rabat", "Tunis"], answer: 0 },
-            { id: 28, type: "tf", q: "COMESA organizes programs to support small and medium enterprises (SMEs).", answer: true },
-            { id: 29, type: "mcq", q: "Which major lake borders Tanzania and is one of the world's deepest?", choices: ["Lake Tanganyika", "Lake Victoria", "Lake Malawi", "Lake Chad"], answer: 0 },
-            { id: 30, type: "mcq", q: "Which of these countries lies on the Horn of Africa?", choices: ["Djibouti", "Zambia", "Malawi", "Botswana"], answer: 0 },
-            { id: 31, type: "mcq", q: "Which of these African capitals is located on the Nile?", choices: ["Khartoum", "Accra", "Harare", "Windhoek"], answer: 0 },
-            { id: 32, type: "tf", q: "COMESA runs initiatives to simplify customs procedures and promote regional trade.", answer: true },
-            { id: 33, type: "mcq", q: "Which of these cuisines is Madagascar famous for?", choices: ["Rice-based dishes", "Sushi", "Tacos", "Pierogi"], answer: 0 },
-            { id: 34, type: "mcq", q: "Which country is known for the Rwenzori Mountains (Snow-capped peaks near the equator)?", choices: ["Uganda", "Egypt", "Senegal", "Morocco"], answer: 0 },
-            { id: 35, type: "mcq", q: "Which body of water lies to the east of Madagascar?", choices: ["Indian Ocean", "Atlantic Ocean", "Pacific Ocean", "Mediterranean Sea"], answer: 0 },
-            { id: 36, type: "tf", q: "Trade corridors and transport infrastructure are outside COMESA's interests.", answer: false },
-            { id: 37, type: "mcq", q: "Which African country hosts the famous volcano Mount Nyiragongo?", choices: ["Democratic Republic of the Congo", "Ghana", "Senegal", "Uganda"], answer: 0 },
-            { id: 38, type: "mcq", q: "Which activity is a common tourism draw in Uganda and Rwanda?", choices: ["Gorilla trekking", "Skiing", "Polar bear watching", "Ice fishing"], answer: 0 },
-            { id: 39, type: "mcq", q: "Which of these islands forms part of the Comoros archipelago?", choices: ["Grande Comore", "Sicily", "Bali", "Corsica"], answer: 0 },
-            { id: 40, type: "mcq", q: "Which of these is an example of a regional economic community in Africa besides COMESA?", choices: ["African Union (AU)", "European Union (EU)", "Association of Southeast Asian Nations (ASEAN)", "Mercosur"], answer: 0 }
-        ];
+<script>
+/* ================= QUESTIONS (10 ONLY) ================= */
 
-        // App state
-        let currentMode = "menu";
-        let currentQuestionIndex = 0;
-        let userAnswers = {};
-        let score = 0;
-        let showAnswer = false;
-        let shuffledQuestions = [];
-        let rapidFireTimer = 8;
-        let rapidFireInterval = null;
-        let rapidFireScore = 0;
-        let rapidFireIndex = 0;
-        
-        // Initialize app
-        function initApp() {
-            // Shuffle questions for quiz mode
-            shuffledQuestions = QUESTIONS.map((q, idx) => idx).sort(() => Math.random() - 0.5);
-            renderApp();
-        }
-        
-        // Render the entire app based on current mode
-        function renderApp() {
-            const appElement = document.getElementById('app');
-            
-            if (currentMode === "menu") {
-                appElement.innerHTML = renderMenu();
-            } else if (currentMode === "quiz") {
-                appElement.innerHTML = renderQuiz();
-            } else if (currentMode === "match") {
-                appElement.innerHTML = renderMatchingGame();
-            } else if (currentMode === "rapid") {
-                appElement.innerHTML = renderRapidFire();
-            } else if (currentMode === "results") {
-                appElement.innerHTML = renderResults();
-            }
-            
-            // Re-attach event listeners
-            attachEventListeners();
-        }
-        
-        function renderMenu() {
-            return `
-                <header class="flex flex-col md:flex-row items-center justify-between mb-6">
-                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4 md:mb-0">🌍 COMESA Quizery</h1>
-                    <div class="space-x-3">
-                        <button id="menuBtn" class="px-3 py-1 rounded-lg bg-indigo-600 text-white hover:scale-105 transform transition">Menu</button>
-                        <button id="resetBtn" class="px-3 py-1 rounded-lg bg-red-500 text-white hover:opacity-90 transition">Reset</button>
-                    </div>
-                </header>
+const QUESTIONS = [
+    {
+        type: "mcq",
+        q: "ماذا تعني كلمة COMESA؟",
+        choices: [
+            "مجتمع شرق وجنوب أفريقيا",
+            "السوق المشتركة لشرق وجنوب أفريقيا",
+            "مجلس دول شرق أفريقيا",
+            "اتحاد دول أفريقيا"
+        ],
+        answer: 1
+    },
+    {
+        type: "mcq",
+        q: "أين يقع المقر الرئيسي للكوميسا؟",
+        choices: ["نيروبي", "أديس أبابا", "لوساكا", "القاهرة"],
+        answer: 2
+    },
+    {
+        type: "tf",
+        q: "تأسست الكوميسا في التسعينيات.",
+        answer: true
+    },
+    {
+        type: "mcq",
+        q: "ما هي عملة مصر؟",
+        choices: ["الجنيه المصري", "الدولار", "اليورو", "الدينار"],
+        answer: 0
+    },
+    {
+        type: "mcq",
+        q: "أي من هذه الدول غير ساحلية؟",
+        choices: ["أوغندا", "مدغشقر", "جيبوتي", "مصر"],
+        answer: 0
+    },
+    {
+        type: "mcq",
+        q: "تشتهر رواندا بأي حيوان مهدد بالانقراض؟",
+        choices: ["النمور", "الغوريلا الجبلية", "الدببة القطبية", "الكنغر"],
+        answer: 1
+    },
+    {
+        type: "mcq",
+        q: "ما عاصمة أوغندا؟",
+        choices: ["كمبالا", "نيروبي", "كيغالي", "دار السلام"],
+        answer: 0
+    },
+    {
+        type: "tf",
+        q: "تعمل الكوميسا على تقليل الحواجز التجارية بين الدول.",
+        answer: true
+    },
+    {
+        type: "mcq",
+        q: "أي دولة تُعرف بأرض الألف تلة؟",
+        choices: ["رواندا", "إثيوبيا", "الصومال", "مدغشقر"],
+        answer: 0
+    },
+    {
+        type: "mcq",
+        q: "ما الهدف الأساسي للكوميسا؟",
+        choices: [
+            "الاستكشاف الفضائي",
+            "الاندماج الاقتصادي وتشجيع التجارة",
+            "الرياضة فقط",
+            "السياحة"
+        ],
+        answer: 1
+    }
+];
 
-                <main>
-                    <p class="mb-4 text-gray-700">Make learning about COMESA and the region fun — three game modes, animated UI, and 40 ready-made questions. Perfect for competitions and classroom play.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="p-4 rounded-xl border border-indigo-100 shadow-sm hover:shadow-lg transition bg-white">
-                            <h3 class="font-bold text-lg">Classic Quiz</h3>
-                            <p class="text-sm mt-1 text-gray-600">Multiple-choice, one question at a time. Immediate feedback and score.</p>
-                            <button id="startQuizBtn" class="mt-3 px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Start Quiz</button>
-                        </div>
+/* ================= APP LOGIC (UNCHANGED) ================= */
 
-                        <div class="p-4 rounded-xl border border-green-100 shadow-sm hover:shadow-lg transition bg-white">
-                            <h3 class="font-bold text-lg">Matching Game</h3>
-                            <p class="text-sm mt-1 text-gray-600">Match country names to facts or features (editable).</p>
-                            <button id="playMatchBtn" class="mt-3 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">Play Match</button>
-                        </div>
+let current = 0;
+let score = 0;
+let show = false;
 
-                        <div class="p-4 rounded-xl border border-yellow-100 shadow-sm hover:shadow-lg transition bg-white">
-                            <h3 class="font-bold text-lg">Rapid Fire</h3>
-                            <p class="text-sm mt-1 text-gray-600">Timed rapid-fire mode for competitions.</p>
-                            <button id="rapidFireBtn" class="mt-3 px-4 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600">Rapid Fire</button>
-                        </div>
-                    </div>
+function render() {
+    const q = QUESTIONS[current];
+    document.getElementById("app").innerHTML = `
+        <h1 class="text-2xl font-bold mb-4 text-center">🌍 اختبار الكوميسا</h1>
 
-                    <section class="mt-6 p-4 bg-gray-50 rounded-xl">
-                        <h4 class="font-semibold text-lg">Customize</h4>
-                        <p class="text-sm text-gray-700 mt-1">All questions are defined in the source array so you can edit content, swap in local facts, or connect to an API to pull live data.</p>
-                    </section>
-                </main>
+        <p class="mb-2">السؤال ${current + 1} من ${QUESTIONS.length}</p>
 
-                <footer class="mt-6 text-xs text-gray-500">Made for competitions — edit the questions to suit your study guide. Good luck! 🎉</footer>
-            `;
-        }
-        
-        function renderQuiz() {
-            const question = QUESTIONS[currentQuestionIndex];
-            const questionNumber = currentQuestionIndex + 1;
-            const totalQuestions = QUESTIONS.length;
-            
-            return `
-                <header class="flex flex-col md:flex-row items-center justify-between mb-6">
-                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4 md:mb-0">🌍 COMESA Quizery</h1>
-                    <div class="space-x-3">
-                        <button id="menuBtn" class="px-3 py-1 rounded-lg bg-indigo-600 text-white hover:scale-105 transform transition">Menu</button>
-                        <button id="resetBtn" class="px-3 py-1 rounded-lg bg-red-500 text-white hover:opacity-90 transition">Reset</button>
-                    </div>
-                </header>
+        <div class="p-4 bg-white rounded shadow mb-4">
+            <h2 class="font-semibold mb-3">${q.q}</h2>
 
-                <section class="question-transition">
-                    <div class="flex flex-col md:flex-row items-center justify-between mb-3">
-                        <div class="text-sm mb-2 md:mb-0">Question <span class="font-semibold">${questionNumber}</span> / ${totalQuestions}</div>
-                        <div class="text-sm">Score: <span class="font-semibold">${score}</span></div>
-                    </div>
+            ${q.type === "mcq" ? q.choices.map((c, i) => `
+                <button onclick="choose(${i})"
+                class="block w-full mb-2 p-2 border rounded hover:bg-gray-100">
+                ${c}
+                </button>
+            `).join("") : `
+                <button onclick="choose(true)" class="w-full mb-2 p-2 border rounded">صح</button>
+                <button onclick="choose(false)" class="w-full p-2 border rounded">خطأ</button>
+            `}
+        </div>
 
-                    <div class="p-5 rounded-xl bg-gradient-to-r from-white to-indigo-50 shadow-inner">
-                        ${renderQuestionCard(question)}
-                    </div>
+        <p>النتيجة: ${score}</p>
+    `;
+}
 
-                    <div class="mt-4 flex flex-col md:flex-row justify-between">
-                        <button id="backBtn" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 mb-2 md:mb-0">Back</button>
-                        <div class="space-x-2">
-                            ${showAnswer ? 
-                                `<button id="nextBtn" class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">${currentQuestionIndex + 1 < QUESTIONS.length ? 'Next' : 'Finish'}</button>` : 
-                                `<button id="skipBtn" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Skip</button>`
-                            }
-                        </div>
-                    </div>
-                </section>
-            `;
-        }
-        
-        function renderQuestionCard(question) {
-            const userChoice = userAnswers[currentQuestionIndex];
-            const isTF = question.type === "tf";
-            
-            let choicesHTML = '';
-            
-            if (isTF) {
-                // True/False buttons
-                choicesHTML = `
-                    <div class="flex gap-3">
-                        ${[true, false].map((val, i) => {
-                            const isCorrect = val === question.answer;
-                            const picked = userChoice === val;
-                            const isRevealed = showAnswer && isCorrect;
-                            
-                            let btnClass = "px-4 py-2 rounded-lg border bg-white hover:bg-gray-50";
-                            if (picked) btnClass += " selected-answer";
-                            if (showAnswer && isRevealed) btnClass += " correct-answer";
-                            if (showAnswer && picked && !isCorrect) btnClass += " incorrect-answer";
-                            
-                            return `
-                                <button data-choice="${val}" class="${btnClass}">
-                                    ${val ? 'True' : 'False'}
-                                    ${showAnswer ? `<span class="ml-2">${isCorrect ? '✅' : (picked ? '❌' : '')}</span>` : ''}
-                                </button>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            } else {
-                // Multiple choice
-                choicesHTML = `
-                    <div class="grid gap-3">
-                        ${question.choices.map((choice, i) => {
-                            const isCorrect = i === question.answer;
-                            const picked = userChoice === i;
-                            const isRevealed = showAnswer && isCorrect;
-                            
-                            let btnClass = "text-left p-3 rounded-lg border flex items-center justify-between transition transform hover:scale-[1.01] bg-white hover:bg-gray-50";
-                            if (picked) btnClass += " selected-answer";
-                            if (showAnswer && isRevealed) btnClass += " correct-answer";
-                            if (showAnswer && picked && !isCorrect) btnClass += " incorrect-answer";
-                            
-                            return `
-                                <button data-choice="${i}" class="${btnClass}">
-                                    <span>${choice}</span>
-                                    ${showAnswer ? `<span class="text-sm font-semibold">${isCorrect ? '✅' : (picked ? '❌' : '')}</span>` : ''}
-                                </button>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            }
-            
-            return `
-                <div>
-                    <h2 class="text-xl font-bold mb-3">${question.q}</h2>
-                    ${choicesHTML}
-                </div>
-            `;
-        }
-        
-        function renderMatchingGame() {
-            const PAIRS = [
-                ["Rwanda", "Land of a Thousand Hills"],
-                ["Uganda", "Home to parts of the Nile"],
-                ["Madagascar", "Island known for lemurs"],
-                ["Egypt", "Has a coastline on the Red Sea and Mediterranean"],
-            ];
-            
-            // For simplicity, we'll use a static implementation
-            // In a full implementation, you'd track state for matching game
-            
-            return `
-                <header class="flex flex-col md:flex-row items-center justify-between mb-6">
-                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4 md:mb-0">🌍 COMESA Quizery</h1>
-                    <div class="space-x-3">
-                        <button id="menuBtn" class="px-3 py-1 rounded-lg bg-indigo-600 text-white hover:scale-105 transform transition">Menu</button>
-                        <button id="resetBtn" class="px-3 py-1 rounded-lg bg-red-500 text-white hover:opacity-90 transition">Reset</button>
-                    </div>
-                </header>
+function choose(ans) {
+    if (show) return;
 
-                <section>
-                    <h3 class="font-bold text-xl mb-3">Matching Game</h3>
-                    <p class="mb-4 text-gray-700">Drag and drop or click to match countries with their facts.</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                        <div class="p-4 bg-blue-50 rounded-xl">
-                            <h4 class="font-semibold mb-3">Countries</h4>
-                            ${PAIRS.map(pair => `
-                                <div class="p-3 mb-2 rounded-lg border bg-white cursor-move hover:bg-gray-50" draggable="true" data-country="${pair[0]}">
-                                    ${pair[0]}
-                                </div>
-                            `).join('')}
-                        </div>
-                        
-                        <div class="p-4 bg-green-50 rounded-xl">
-                            <h4 class="font-semibold mb-3">Facts</h4>
-                            ${PAIRS.map(pair => `
-                                <div class="p-3 mb-2 rounded-lg border bg-white cursor-move hover:bg-gray-50" draggable="true" data-fact="${pair[1]}">
-                                    ${pair[1]}
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    <div class="text-sm text-gray-600 mb-4">Tip: Drag a country to its matching fact, or click on a pair to match them.</div>
-                    
-                    <div class="flex justify-between">
-                        <button id="backBtn" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Back</button>
-                        <button id="doneBtn" class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Done</button>
-                    </div>
-                </section>
-            `;
-        }
-        
-        function renderRapidFire() {
-            // Check if we've finished all questions
-            if (rapidFireIndex >= QUESTIONS.length) {
-                currentMode = "results";
-                score = rapidFireScore;
-                renderApp();
-                return '';
-            }
-            
-            const question = QUESTIONS[rapidFireIndex];
-            const isTF = question.type === "tf";
-            
-            let choicesHTML = '';
-            
-            if (isTF) {
-                choicesHTML = `
-                    <div class="flex gap-3">
-                        ${[true, false].map((val, i) => `
-                            <button data-rapid-choice="${val}" class="block w-full px-4 py-2 rounded-lg border bg-white hover:bg-gray-50">
-                                ${val ? 'True' : 'False'}
-                            </button>
-                        `).join('')}
-                    </div>
-                `;
-            } else {
-                choicesHTML = `
-                    <div class="grid gap-2">
-                        ${question.choices.map((choice, i) => `
-                            <button data-rapid-choice="${i}" class="block w-full text-left p-3 rounded-lg border bg-white hover:bg-gray-50">
-                                ${choice}
-                            </button>
-                        `).join('')}
-                    </div>
-                `;
-            }
-            
-            return `
-                <header class="flex flex-col md:flex-row items-center justify-between mb-6">
-                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4 md:mb-0">🌍 COMESA Quizery</h1>
-                    <div class="space-x-3">
-                        <button id="menuBtn" class="px-3 py-1 rounded-lg bg-indigo-600 text-white hover:scale-105 transform transition">Menu</button>
-                        <button id="resetBtn" class="px-3 py-1 rounded-lg bg-red-500 text-white hover:opacity-90 transition">Reset</button>
-                    </div>
-                </header>
+    const q = QUESTIONS[current];
+    if (ans === q.answer) score++;
 
-                <section>
-                    <div class="flex flex-col md:flex-row items-center justify-between mb-3">
-                        <div>Rapid question <span class="font-semibold">${rapidFireIndex + 1}</span> / ${QUESTIONS.length}</div>
-                        <div>Time: <span id="rapidTimer" class="font-semibold ${rapidFireTimer <= 3 ? 'text-red-600 pulse-animation' : ''}">${rapidFireTimer}</span>s</div>
-                    </div>
-                    
-                    <div class="p-4 rounded-lg border bg-white mb-4">
-                        <div class="font-semibold text-lg mb-3">${question.q}</div>
-                        ${choicesHTML}
-                    </div>
-                    
-                    <div class="text-sm mb-4">Score: <span class="font-semibold">${rapidFireScore}</span></div>
-                    
-                    <button id="backBtn" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Back</button>
-                </section>
-            `;
-        }
-        
-        function renderResults() {
-            const total = QUESTIONS.length;
-            const percent = Math.round((score / total) * 100);
-            
-            // Add confetti effect for good scores
-            const confettiClass = percent >= 70 ? 'confetti' : '';
-            
-            return `
-                <div class="${confettiClass}">
-                    <header class="flex flex-col md:flex-row items-center justify-between mb-6">
-                        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-4 md:mb-0">🌍 COMESA Quizery</h1>
-                        <div class="space-x-3">
-                            <button id="menuBtn" class="px-3 py-1 rounded-lg bg-indigo-600 text-white hover:scale-105 transform transition">Menu</button>
-                            <button id="resetBtn" class="px-3 py-1 rounded-lg bg-red-500 text-white hover:opacity-90 transition">Reset</button>
-                        </div>
-                    </header>
-                    
-                    <div class="p-6 text-center">
-                        <div class="text-4xl font-extrabold mb-2">Your Score: ${score} / ${total}</div>
-                        <div class="text-2xl mb-4">${percent}%</div>
-                        
-                        <div class="w-full bg-gray-200 rounded-full h-4 mb-6 mx-auto max-w-xl">
-                            <div class="bg-green-600 h-4 rounded-full" style="width: ${percent}%"></div>
-                        </div>
-                        
-                        <div class="mx-auto mt-4 max-w-xl mb-6">
-                            <p class="text-gray-700">${percent >= 80 ? 'Excellent! You really know your COMESA facts! 🎉' : 
-                                percent >= 60 ? 'Good job! You know quite a bit about COMESA and the region.' : 
-                                'Keep practicing! Review the questions to learn more about COMESA.'}</p>
-                        </div>
+    show = true;
+    current++;
 
-                        <div class="mt-6 flex justify-center gap-3">
-                            <button id="restartBtn" class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Back to Menu</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Event handlers
-        function startQuiz() {
-            currentMode = "quiz";
-            currentQuestionIndex = 0;
-            userAnswers = {};
-            score = 0;
-            showAnswer = false;
-            renderApp();
-        }
-        
-        function pickChoice(choice) {
-            if (showAnswer) return;
-            
-            const question = QUESTIONS[currentQuestionIndex];
-            let isCorrect = false;
-            
-            if (question.type === "mcq") {
-                isCorrect = parseInt(choice) === question.answer;
-            } else if (question.type === "tf") {
-                isCorrect = (choice === "true") === question.answer;
-            }
-            
-            userAnswers[currentQuestionIndex] = choice;
-            
-            if (isCorrect) {
-                score++;
-            }
-            
-            showAnswer = true;
-            renderApp();
-        }
-        
-        function nextQuestion() {
-            showAnswer = false;
-            
-            if (currentQuestionIndex + 1 < QUESTIONS.length) {
-                currentQuestionIndex++;
-                renderApp();
-            } else {
-                currentMode = "results";
-                renderApp();
-            }
-        }
-        
-        function startMatchingGame() {
-            currentMode = "match";
-            renderApp();
-        }
-        
-        function startRapidFire() {
-            currentMode = "rapid";
-            rapidFireIndex = 0;
-            rapidFireScore = 0;
-            rapidFireTimer = 8;
-            
-            // Start the timer
-            if (rapidFireInterval) clearInterval(rapidFireInterval);
-            
-            rapidFireInterval = setInterval(() => {
-                rapidFireTimer--;
-                document.getElementById('rapidTimer').textContent = rapidFireTimer;
-                
-                if (rapidFireTimer <= 0) {
-                    rapidFireIndex++;
-                    rapidFireTimer = 8;
-                    
-                    if (rapidFireIndex >= QUESTIONS.length) {
-                        clearInterval(rapidFireInterval);
-                        currentMode = "results";
-                        score = rapidFireScore;
-                        renderApp();
-                    } else {
-                        renderApp();
-                    }
-                }
-            }, 1000);
-            
-            renderApp();
-        }
-        
-        function answerRapidFire(choice) {
-            const question = QUESTIONS[rapidFireIndex];
-            let isCorrect = false;
-            
-            if (question.type === "mcq") {
-                isCorrect = parseInt(choice) === question.answer;
-            } else if (question.type === "tf") {
-                isCorrect = (choice === "true") === question.answer;
-            }
-            
-            if (isCorrect) {
-                rapidFireScore++;
-            }
-            
-            // Move to next question
-            rapidFireIndex++;
-            rapidFireTimer = 8;
-            
-            if (rapidFireIndex >= QUESTIONS.length) {
-                clearInterval(rapidFireInterval);
-                currentMode = "results";
-                score = rapidFireScore;
-                renderApp();
-            } else {
-                renderApp();
-            }
-        }
-        
-        function restartAll() {
-            currentMode = "menu";
-            currentQuestionIndex = 0;
-            userAnswers = {};
-            score = 0;
-            showAnswer = false;
-            shuffledQuestions = QUESTIONS.map((q, idx) => idx).sort(() => Math.random() - 0.5);
-            
-            // Clear rapid fire interval if active
-            if (rapidFireInterval) {
-                clearInterval(rapidFireInterval);
-                rapidFireInterval = null;
-            }
-            
-            renderApp();
-        }
-        
-        function attachEventListeners() {
-            // Menu buttons
-            const menuBtn = document.getElementById('menuBtn');
-            if (menuBtn) {
-                menuBtn.addEventListener('click', () => {
-                    currentMode = "menu";
-                    renderApp();
-                });
-            }
-            
-            const resetBtn = document.getElementById('resetBtn');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', restartAll);
-            }
-            
-            // Menu mode buttons
-            const startQuizBtn = document.getElementById('startQuizBtn');
-            if (startQuizBtn) {
-                startQuizBtn.addEventListener('click', startQuiz);
-            }
-            
-            const playMatchBtn = document.getElementById('playMatchBtn');
-            if (playMatchBtn) {
-                playMatchBtn.addEventListener('click', startMatchingGame);
-            }
-            
-            const rapidFireBtn = document.getElementById('rapidFireBtn');
-            if (rapidFireBtn) {
-                rapidFireBtn.addEventListener('click', startRapidFire);
-            }
-            
-            // Quiz mode buttons
-            const backBtn = document.getElementById('backBtn');
-            if (backBtn) {
-                backBtn.addEventListener('click', () => {
-                    currentMode = "menu";
-                    renderApp();
-                });
-            }
-            
-            const nextBtn = document.getElementById('nextBtn');
-            if (nextBtn) {
-                nextBtn.addEventListener('click', nextQuestion);
-            }
-            
-            const skipBtn = document.getElementById('skipBtn');
-            if (skipBtn) {
-                skipBtn.addEventListener('click', () => {
-                    userAnswers[currentQuestionIndex] = null;
-                    showAnswer = true;
-                    renderApp();
-                });
-            }
-            
-            // Choice buttons in quiz mode
-            const choiceButtons = document.querySelectorAll('button[data-choice]');
-            choiceButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const choice = e.currentTarget.getAttribute('data-choice');
-                    pickChoice(choice);
-                });
-            });
-            
-            // Rapid fire choice buttons
-            const rapidChoiceButtons = document.querySelectorAll('button[data-rapid-choice]');
-            rapidChoiceButtons.forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const choice = e.currentTarget.getAttribute('data-rapid-choice');
-                    answerRapidFire(choice);
-                });
-            });
-            
-            // Matching game buttons
-            const doneBtn = document.getElementById('doneBtn');
-            if (doneBtn) {
-                doneBtn.addEventListener('click', () => {
-                    currentMode = "results";
-                    renderApp();
-                });
-            }
-            
-            // Results buttons
-            const restartBtn = document.getElementById('restartBtn');
-            if (restartBtn) {
-                restartBtn.addEventListener('click', restartAll);
-            }
-            
-            // Add drag and drop for matching game (simplified)
-            if (currentMode === "match") {
-                const draggables = document.querySelectorAll('[draggable="true"]');
-                
-                draggables.forEach(item => {
-                    item.addEventListener('dragstart', (e) => {
-                        e.dataTransfer.setData('text/plain', e.target.textContent);
-                        e.target.classList.add('opacity-50');
-                    });
-                    
-                    item.addEventListener('dragend', (e) => {
-                        e.target.classList.remove('opacity-50');
-                    });
-                    
-                    item.addEventListener('click', (e) => {
-                        e.target.classList.toggle('match-correct');
-                    });
-                });
-                
-                const dropZones = document.querySelectorAll('.p-4.bg-blue-50, .p-4.bg-green-50');
-                dropZones.forEach(zone => {
-                    zone.addEventListener('dragover', (e) => {
-                        e.preventDefault();
-                        zone.classList.add('bg-gray-100');
-                    });
-                    
-                    zone.addEventListener('dragleave', () => {
-                        zone.classList.remove('bg-gray-100');
-                    });
-                    
-                    zone.addEventListener('drop', (e) => {
-                        e.preventDefault();
-                        zone.classList.remove('bg-gray-100');
-                        const data = e.dataTransfer.getData('text/plain');
-                        
-                        // Simple matching logic - in a full implementation, you'd check if the match is correct
-                        const newItem = document.createElement('div');
-                        newItem.className = 'p-3 mb-2 rounded-lg border bg-white';
-                        newItem.textContent = data;
-                        zone.appendChild(newItem);
-                    });
-                });
-            }
-        }
-        
-        // Initialize the app when the page loads
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
+    if (current < QUESTIONS.length) {
+        show = false;
+        render();
+    } else {
+        document.getElementById("app").innerHTML = `
+            <h1 class="text-3xl font-bold text-center">🎉 انتهى الاختبار</h1>
+            <p class="text-center mt-4 text-xl">نتيجتك: ${score} / ${QUESTIONS.length}</p>
+        `;
+    }
+}
+
+render();
+</script>
 </body>
 </html>
